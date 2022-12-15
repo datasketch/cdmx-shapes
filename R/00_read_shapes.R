@@ -1,6 +1,5 @@
 #' @export
 read_shape <- function(url, export_dir) {
-  export_dir <- "temporal"
   file_destiny <- paste0(tempdir(check = TRUE), "shape_file.zip")
   download.file(url, destfile = file_destiny)
   unzip(zipfile = file_destiny, exdir = export_dir)
@@ -17,4 +16,5 @@ read_shape <- function(url, export_dir) {
     layer = shape_layer,
     verbose=FALSE
   )
+  shape_data
 }
