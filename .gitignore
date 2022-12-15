@@ -1,0 +1,10 @@
+.Rproj.user
+.DS_Store
+.Rbuildignore
+.RData
+.Renviron
+.Rhistory
+.Rprofile
+inst/pharma-corruption-app/rsconnect
+inst/pharma-corruption-app/.Rbuidignore
+inst/pharma-corruption-app/.DS_Store
