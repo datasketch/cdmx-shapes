@@ -1,8 +1,8 @@
 #webshot::install_phantomjs()
+library(cdmx.shapes)
 library(dsmodules)
 library(hgchmagic)
 library(lfltmagic)
-library(parmesan)
 library(shiny)
 library(shinypanels)
 
@@ -13,7 +13,7 @@ ui <- panelsPage(
         can_collapse = FALSE,
         width = 300,
         body =  div(
-          uiOutput("controls")
+          uiOutput("layers")
         ),
         footer =  tags$a(
           href="https://www.datasketch.co", target="blank",
@@ -38,6 +38,47 @@ ui <- panelsPage(
 
 server <- function(input, output, session) {
 
+
+  # global info -------------------------------------------------------------
+
+  readRenviron(".Renviron")
+  urlInfo <- Sys.getenv("ckanUrl")
+
+  par <- list(ckanConf = NULL)
+
+  url_par <- reactive({
+    shinyinvoer::url_params(par, session)
+  })
+
+
+  # read ckan info ----------------------------------------------------------
+
+  info_url <- reactive({
+    linkInfo <- url_par()$inputs$ckanConf
+    if (is.null(linkInfo)) linkInfo <-  "cd29b08a-50a3-486a-9bea-12d745e2964c"
+      cdmx.shapes:::read_ckan_info(url = urlInfo, linkInfo = linkInfo)
+  })
+
+  # read url from ckan ------------------------------------------------------
+
+  shape_info <- reactive({
+    req(info_url())
+    url_shape <- info_url()$url
+    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/ace56b90-85b6-47ed-a9d6-acf413f61dda/download/ingreso_promedio_trimestral.zip"
+    unzip_shape(url = url_shape, export_dir = "down_shapes")
+  })
+
+
+  output$layers <- renderUI({
+    req(shape_info)
+    checkboxGroupInput("layer_id",
+                       "Capa a visualizar",
+                       shape_info()$shape_layer,
+                       selected = shape_info()$shape_layer[1])
+  })
+
+
+
   output$viz_icons <- renderUI({
     suppressWarnings(
       shinyinvoer::buttonImageInput("viz_selection",
@@ -52,7 +93,6 @@ server <- function(input, output, session) {
       )
     )
   })
-
 
 }
 
