@@ -1,8 +1,7 @@
 #webshot::install_phantomjs()
 library(cdmx.shapes)
 library(dsmodules)
-library(hgchmagic)
-library(lfltmagic)
+library(leaflet)
 library(shiny)
 library(shinypanels)
 
@@ -11,11 +10,14 @@ ui <- panelsPage(
   panel(title = " ",
         id = "azul",
         can_collapse = FALSE,
-        width = 300,
+        width = 350,
         body =  div(
+          div(class = "title-div-filters", "OPCIONES MAPA"),
           uiOutput("layers"),
           uiOutput("numeric_ui"),
-          uiOutput("label_opts")
+          uiOutput("label_opts"),
+          div(class = "title-div-filters", "AJUSTES ESTÉTICOS"),
+          uiOutput("colors")
         ),
         footer =  tags$a(
           href="https://www.datasketch.co", target="blank",
@@ -32,8 +34,8 @@ ui <- panelsPage(
           uiOutput("downloads")
         ),
         body =  div(
-          verbatimTextOutput("debug")
-          #uiOutput("viz_view")
+          verbatimTextOutput("debug"),
+          leafletOutput("map_shape")
         )
   )
 )
@@ -139,12 +141,19 @@ server <- function(input, output, session) {
   })
 
 
+  output$colors <- renderUI({
+    req(shape_load())
+    colores <- cdmx.shapes:::colores_shape(class_shape = class(shape_load())[1])
+    shinyinvoer::radioButtonsInput("colors_id", label = "Colores", colores)
+  })
+
+
   shape_to_plot <- reactive({
     req(shape_load())
     shape <- shape_load()
     label_id <- input$label_id
     if (!is.null(label_id)) {
-      shape@data <- shape@data %>%
+      shape@data <- shape@data |>
         dplyr::mutate(labels = glue::glue(
           cdmx.shapes:::labels_map(nms = label_id)) %>%
             lapply(htmltools::HTML)
@@ -155,8 +164,14 @@ server <- function(input, output, session) {
     shape
   })
 
+
+  output$map_shape <- renderLeaflet({
+    req(shape_to_plot())
+    plot_shapes(shape_to_plot())
+  })
+
   output$debug <- renderPrint({
-    shape_to_plot()
+    print(class(shape_load())[1])
   })
 
 
