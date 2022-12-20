@@ -24,7 +24,7 @@ a {
 }
 
 a#description_modal_ui_1-PdfReclasificacion,#description_modal_ui_1-PdfUpdate,#description_modal_ui_1-PdfOldUpdate {
- color: #435b69 !important; 
+ color: #435b69 !important;
  font-size: 13px !important;
 }
 
@@ -184,14 +184,14 @@ background: #637381 !important;
 }
 
 .buttons-group .button-style {
-  background: #4A4E4E !important; 
+  background: #4A4E4E !important;
 }
 
 .buttons-group .button-style .image-style {
   filter: initial !important;
   width: auto !important;
 }
-    
+
 
 .buttons-group .button-style.active-btn:hover {
   background-color: #637381 !important;
@@ -212,7 +212,7 @@ background: #637381 !important;
  color: transparent !important;
  background-repeat: no-repeat !important;
  border: 0px !important;
- 
+
 }
 
 .irs--shiny.irs-with-grid {
@@ -238,7 +238,7 @@ background: #637381 !important;
     color: #637381 !important;
     padding-top: 0rem !important;
     /*margin-top: -2rem !important;*/
-} 
+}
 
 
 .switch-display {
@@ -290,9 +290,6 @@ scroll STYLES
   background: #6a6767 !important;
 }
 
-.first-container {
- width: 480px !important;
-}
 
 /*label calendario */
 .flatpickr-input[readonly] {
@@ -332,7 +329,7 @@ scroll STYLES
   cursor: pointer;
   border: 1px solid #3A3C6A !important;
   border-radius: 10px !important;
-  color: #3A3C6A !important; 
+  color: #3A3C6A !important;
 }
 
 
@@ -397,7 +394,7 @@ scroll STYLES
 }
 
 
-#info_footer_ui_1-descripcion_modal, #info_footer_ui_1-dicc_modal, 
+#info_footer_ui_1-descripcion_modal, #info_footer_ui_1-dicc_modal,
 #info_footer_ui_1-recursos_modal {
  /* UI Properties */
   width: 100px;
@@ -533,13 +530,13 @@ p {
   border: 1px solid #cccccc;
   border-radius: 0px !important;
   padding: 15px;
-  font-size: 14px !important; 
+  font-size: 14px !important;
   margin-bottom: 5px;
 }
 
 .data-opts {
  border-bottom: 0.821528px solid #929190;
- padding: 5px 0px; 
+ padding: 5px 0px;
 }
 
 .data-format,.viz-format {
@@ -585,7 +582,7 @@ p {
 }
 
 .content-all-index {
- margin-bottom: 19% !important; 
+ margin-bottom: 19% !important;
 }
 
 #labelIndex {
@@ -677,7 +674,7 @@ input[type='radio']:checked:after {
 
 
 .dataTables_scrollHead {
-  overflow: hidden !important; 
+  overflow: hidden !important;
 }
 
 
@@ -728,7 +725,7 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 }
 
 .img-down {
- width: 10px; 
+ width: 10px;
 }
 
 .down-resources {
@@ -776,11 +773,11 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
 
 
 .text-api {
- font-size: 14px !important; 
+ font-size: 14px !important;
  padding: 5px;
 }
 #link-modal {
- font-size: 14px !important; 
+ font-size: 14px !important;
  border-style: none !important;
  color: #3998A5;
 }

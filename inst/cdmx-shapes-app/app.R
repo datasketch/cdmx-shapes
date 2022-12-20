@@ -3,10 +3,20 @@ library(cdmx.shapes)
 library(dsmodules)
 library(leaflet)
 library(shiny)
+library(shinybusy)
 library(shinypanels)
+import::into("imports:homodatum", fringe, .from = homodatum)
 
 ui <- panelsPage(
   includeCSS("www/custom.css"),
+  tags$head(tags$script(src="handlers.js")),
+  shinybusy::busy_start_up(
+    loader = tags$img(
+      src = "img/loading_gris.gif",
+      width = 100),
+    mode = "auto",
+    color = "#435b69",
+    background = "#FFF"),
   panel(title = " ",
         id = "azul",
         can_collapse = FALSE,
@@ -27,14 +37,17 @@ ui <- panelsPage(
   panel(title = " ",
         id = "naranja",
         can_collapse = FALSE,
-        header_right = div(
-          class = "head-viz",
-          div(class = "viz-style",
-              uiOutput("viz_icons")),
-          uiOutput("downloads")
+        header_right = div(style = "display: flex;align-items: center;",
+                              # uiOutput("viz_icons"),
+                           p(class = "app-version","Versión Beta"),
+                           div(class = 'inter-container', style = "margin-right: 3%; margin-left: 3%;",
+                               actionButton(inputId ='fs', "Fullscreen", onclick = "gopenFullscreen();")
+                           ),
+                           div(class='second-container',
+                               uiOutput("downloads"))
         ),
         body =  div(
-         # verbatimTextOutput("debug"),
+          # verbatimTextOutput("debug"),
           leafletOutput("map_shape", height = 620)
         )
   )
@@ -192,20 +205,20 @@ server <- function(input, output, session) {
   })
 
 
-  output$viz_icons <- renderUI({
-    suppressWarnings(
-      shinyinvoer::buttonImageInput("viz_selection",
-                                    " ",
-                                    images = "map",
-                                    tooltips = "Mapa",
-                                    path = "viz_icons/",
-                                    active = "map",
-                                    imageStyle = list(shadow = TRUE,
-                                                      borderColor = "#ffffff",
-                                                      padding = "3px")
-      )
-    )
-  })
+  # output$viz_icons <- renderUI({
+  #   suppressWarnings(
+  #     shinyinvoer::buttonImageInput("viz_selection",
+  #                                   " ",
+  #                                   images = "map",
+  #                                   tooltips = "Mapa",
+  #                                   path = "viz_icons/",
+  #                                   active = "map",
+  #                                   imageStyle = list(shadow = TRUE,
+  #                                                     borderColor = "#ffffff",
+  #                                                     padding = "3px")
+  #     )
+  #   )
+  # })
 
 }
 

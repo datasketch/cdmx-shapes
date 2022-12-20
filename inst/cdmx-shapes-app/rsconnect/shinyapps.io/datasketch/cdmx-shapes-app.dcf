@@ -1,0 +1,13 @@
+name: cdmx-shapes-app
+title: cdmx-shapes-app
+username:
+account: datasketch
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 7924182
+bundleId: 6659066
+url: https://datasketch.shinyapps.io/cdmx-shapes-app/
+when: 1671570168.89329
+lastSyncTime: 1671570168.8933
+asMultiple: FALSE
+asStatic: FALSE
