@@ -91,9 +91,9 @@ server <- function(input, output, session) {
     shape_layer <- input$layer_id
     if (is.null(shape_layer)) shape_layer <- shape_info()$shape_layer[1]
     suppressWarnings(
-     shape <- read_shape(shape_dsn = shape_info()$shape_dsn,
-                 shape_layer = shape_layer,
-                 shape_file = shape_info()$shape_file)
+      shape <- read_shape(shape_dsn = shape_info()$shape_dsn,
+                          shape_layer = shape_layer,
+                          shape_file = shape_info()$shape_file)
     )
     shape
   })
@@ -139,8 +139,24 @@ server <- function(input, output, session) {
   })
 
 
+  shape_to_plot <- reactive({
+    req(shape_load())
+    shape <- shape_load()
+    label_id <- input$label_id
+    if (!is.null(label_id)) {
+      shape@data <- shape@data %>%
+        dplyr::mutate(labels = glue::glue(
+          cdmx.shapes:::labels_map(nms = label_id)) %>%
+            lapply(htmltools::HTML)
+        )
+    } else {
+      shape@data$labels <- NA
+    }
+    shape
+  })
+
   output$debug <- renderPrint({
-    numeric_var()
+    shape_to_plot()
   })
 
 
