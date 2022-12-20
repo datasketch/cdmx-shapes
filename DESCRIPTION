@@ -10,10 +10,12 @@ License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
 Imports: 
     fs,
     homodatum,
+    htmltools,
     jsonlite,
     leaflet,
     purrr,
     rgdal,
+    shiny,
     sp,
     stringr
 Encoding: UTF-8

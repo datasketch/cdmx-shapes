@@ -73,8 +73,7 @@ a#description_modal_ui_1-PdfReclasificacion,#description_modal_ui_1-PdfUpdate,#d
   font-size: 12px;
 }
 
-.control-label#load_parmesan_ui_1-desagregacionId-label,
-#load_parmesan_ui_1-aggId-label,#load_parmesan_ui_1-dateFormatId-label{
+.control-label{
   background: #637381;
   border-radius: 4px;
   padding: 7px;
@@ -162,45 +161,6 @@ background: #637381 !important;
 }
 
 
-
-.buttons-group {
-  padding: 0px 0px 10px !important;
-  display: flex !important;
-  gap: 20px !important;
-}
-
-
-.button-container {
-  border-radius: 4.62px !important;
-}
-
-.buttons-group .button-container {
- height: 40px !important;
- width: 40px !important;
-}
-
-.buttons-group .button-style.active-btn {
-  background-color: #637381 !important;
-}
-
-.buttons-group .button-style {
-  background: #4A4E4E !important;
-}
-
-.buttons-group .button-style .image-style {
-  filter: initial !important;
-  width: auto !important;
-}
-
-
-.buttons-group .button-style.active-btn:hover {
-  background-color: #637381 !important;
-  background: #637381 !important;
-  color: #637381 !important;
-}
-
-
-
 .button-checkmark {
  display: none;
 }
@@ -215,24 +175,6 @@ background: #637381 !important;
 
 }
 
-.irs--shiny.irs-with-grid {
-    margin-bottom: 10px;
-}
-
-.irs-bar {
-    border-top: 1px solid #637381 !important;
-    border-bottom: 1px solid #637381 !important;
-    background: #637381!important;
-}
-
-.irs-from, .irs-to, .irs-single {
-    color: #637381 !important;
-}
-
-
-.js-grid-text-10 {
-  visibility: hidden !important;
-}
 
 .style_section {
     color: #637381 !important;
@@ -240,32 +182,6 @@ background: #637381 !important;
     /*margin-top: -2rem !important;*/
 }
 
-
-.switch-display {
-    align-items: center;
-    background-color: #CBD8D8;
-}
-
-.switch-indicator {
-    background-color: #ffffff;
-    border: 2px solid #CBD8D8;
-}
-
-
-.switch-state:checked + .switch-display .switch-indicator {
-    border-color: #637381 !important;
-}
-
-.switch-state:checked + .switch-display {
-    background-color: #637381 !important;
-    color: #ffffff;
-}
-
-.switch-styles {
-    display: inline-flex !important;
-    flex-direction: row-reverse !important;
-    align-items: center !important;
-}
 
 
 /*
@@ -291,69 +207,7 @@ scroll STYLES
 }
 
 
-/*label calendario */
-.flatpickr-input[readonly] {
-    cursor: pointer;
-    background: #FFFFFF;
-    border: 1.38462px solid rgba(104, 103, 103, 0.15);
-    box-sizing: border-box;
-    border-radius: 5.53846px;
-    color: #000;
-    font-size: 12px;
-    font-weight: 400;
-    font-family: 'Roboto';
-    margin-bottom: 15px;
-    padding: 7px;
-    width: 100%;
-}
 
-.shinyinvoer-date-range-container p {
-  color: #545454;
-  font-family: 'Roboto';
-  margin-bottom: 1px !important;
-}
-
-.shinyinvoer-date-range-input label {
-  color: #435b69;
-  font-family: 'Roboto';
-  font-style: normal;
-  font-weight: 700;
-  font-size: 12px;
-  line-height: 20px;
-  display: flex;
-  align-items: center;
-  letter-spacing: 0.25px;
-}
-
-.selectize-control.multi .selectize-input.has-items {
-  cursor: pointer;
-  border: 1px solid #3A3C6A !important;
-  border-radius: 10px !important;
-  color: #3A3C6A !important;
-}
-
-
-.shiny-html-output {
-  font-weight: 400 !important;
-}
-
-#load_parmesan_ui_1-output_aggId {
- margin-bottom: 10px !important;
-}
-
-#load_parmesan_ui_1-output_desagregacionId {
- margin-bottom: 10px !important;
-}
-
-
-#load_parmesan_ui_1-output_colorsId {
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
-#load_parmesan_ui_1-varViewOut {
-  margin-top: 15px !important;
-}
 
 
 .form-group,.radio {
@@ -595,34 +449,12 @@ p {
   gap: 10px;
 }
 
-#INDEXTEST-updateAllparmesan {
-  border: 0px !important;
-  padding: 0px !important;
-  font-size: 0.72rem !important;
-  margin: 0px !important;
-}
-
-.index-buttons {
-  display: block !important;
-  margin-bottom: 7px !important;
-}
-
-.content-index {
-  display: flex;
-  text-align: center;
-  align-items: center;
-}
 
 .input-group {
   flex-direction: initial !important;
   margin-bottom: 7px;
 }
 
-#load_parmesan_ui_1-anioId_button {
-  background: #637381 !important;
-  cursor: initial !important;
-  padding: 6px 7px !important;
-}
 
 
 .index-btn {
@@ -680,49 +512,6 @@ input[type='radio']:checked:after {
 
 
 
-table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
- background-color: transparent !important;
-  }
-
-.marker-cluster span {
-    color: #fff !important;
-    font-weight: 700;
-}
-
-.marker-cluster-medium div, .marker-cluster-small div, .marker-cluster-large div {
-    background-color: #637381 !important;
-}
-
-.marker-cluster-medium, .marker-cluster-small, .marker-cluster-large {
-    background-color: rgba(99, 115, 129, 0.5) !important;
-}
-
-
-
-.leaflet-layer.blend .leaflet-tile {
-    background-blend-mode: saturation !important;
-}
-
-.map-caption{
-  background-color: #ffffff !important;
-}
-
-#naranja {
-  flex-shrink: 1;
-}
-
-
-.shinyinvoer-date-range-input {
-  display: inline-block !important;
-}
-
-
-#naranja_body .panel-content {
-    height: 100%;
-   display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
 
 .img-down {
  width: 10px;
@@ -782,20 +571,6 @@ table.dataTable.hover tbody tr:hover, table.dataTable.display tbody tr:hover {
  color: #3998A5;
 }
 
-
-#table-punto-api {
-  font-family: 'Roboto';
-  border-collapse: collapse;
-  width: 100%;
-}
-
-#table-punto-api td, #table-punto-api th {
-  border: 1px solid #ddd;
-  padding: 8px;
-  text-align: left;
-}
-
-#table-punto-api tr:nth-child(even){background-color: #f2f2f2;}
 
 .title-div-filters {
  font-weight: 700;

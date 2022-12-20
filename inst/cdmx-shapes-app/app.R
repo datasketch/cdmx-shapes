@@ -5,7 +5,7 @@ library(leaflet)
 library(shiny)
 library(shinybusy)
 library(shinypanels)
-import::into("imports:homodatum", fringe, .from = homodatum)
+library(tidyr)
 
 ui <- panelsPage(
   includeCSS("www/custom.css"),
@@ -17,6 +17,10 @@ ui <- panelsPage(
     mode = "auto",
     color = "#435b69",
     background = "#FFF"),
+  shinypanels::modal(id = 'modal_download', title = " ", fullscreen = TRUE,
+                     id_title = "down-title", id_content = "tab-content-modal", id_wrapper = "tab-modal-down",
+                     div( div(class = "tab-head-modal", uiOutput("menu_modal")), div(class = "tab-body-modal", uiOutput("down_index")))
+  ),
   panel(title = " ",
         id = "azul",
         can_collapse = FALSE,
@@ -38,13 +42,14 @@ ui <- panelsPage(
         id = "naranja",
         can_collapse = FALSE,
         header_right = div(style = "display: flex;align-items: center;",
-                              # uiOutput("viz_icons"),
+                           # uiOutput("viz_icons"),
                            p(class = "app-version","Versión Beta"),
                            div(class = 'inter-container', style = "margin-right: 3%; margin-left: 3%;",
                                actionButton(inputId ='fs', "Fullscreen", onclick = "gopenFullscreen();")
                            ),
                            div(class='second-container',
-                               uiOutput("downloads"))
+                               actionButton("descargas", "Descargas", icon = icon("download"), width = "150px")
+                           )
         ),
         body =  div(
           # verbatimTextOutput("debug"),
@@ -200,9 +205,25 @@ server <- function(input, output, session) {
     plot_shapes(shape_to_plot(), opts = opts)
   })
 
+
+
+
+  # downloads ---------------------------------------------------------------
+
+  observeEvent(input$descargas, {
+    shinypanels::showModal("modal_download")
+  })
+
+  output$menu_modal <- renderUI({
+    cdmx.shapes:::menu_buttons(ids = c("datos_dw", "viz_dw", "api_dw"), labels = c("Base de datos", "Gráfica", "API"))
+  })
+
+
+
   output$debug <- renderPrint({
     print(class(shape_load())[1])
   })
+
 
 
   # output$viz_icons <- renderUI({
