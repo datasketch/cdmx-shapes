@@ -16,6 +16,7 @@ labels_map <- function (nms) {
   tooltip
 }
 
+
 colores_shape <- function(class_shape) {
 
   if (class_shape %in% c("SpatialLinesDataFrame", "SpatialPointsDataFrame")) {
@@ -40,7 +41,13 @@ colores_shape <- function(class_shape) {
     )
   }
 
+  cd
 
+}
+
+
+colors_print <- function(palette_colors) {
+  cd <- palette_colors
   lc <- purrr::map(names(cd), function(palette) {
     colors <- cd[[palette]]
     as.character( div(
@@ -52,3 +59,4 @@ colores_shape <- function(class_shape) {
   names(lc) <- names(cd)
   lc
 }
+

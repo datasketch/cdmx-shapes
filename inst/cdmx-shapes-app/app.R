@@ -34,8 +34,8 @@ ui <- panelsPage(
           uiOutput("downloads")
         ),
         body =  div(
-          verbatimTextOutput("debug"),
-          leafletOutput("map_shape")
+         # verbatimTextOutput("debug"),
+          leafletOutput("map_shape", height = 620)
         )
   )
 )
@@ -118,6 +118,8 @@ server <- function(input, output, session) {
     if (nrow(dic) == 0) return()
     dic$hdType[dic$id == "ano"] <- "Yea"
     dic$hdType[dic$id == "id"] <- "Uid"
+    dic$hdType[dic$id == "cve_ent"] <- "___"
+    dic$hdType[dic$id == "c_ingrtrim"] <- "___"
     dic <- dic |>
       dplyr::filter(hdType == "Num")
     if (nrow(dic) == 0) return()
@@ -140,10 +142,16 @@ server <- function(input, output, session) {
                        selected = dic$label)
   })
 
+  palette_colors <- reactive({
+    req(shape_load())
+    pc <- cdmx.shapes:::colores_shape(class_shape = class(shape_load())[1])
+    pc
+  })
+
 
   output$colors <- renderUI({
-    req(shape_load())
-    colores <- cdmx.shapes:::colores_shape(class_shape = class(shape_load())[1])
+    req(palette_colors())
+    colores <- cdmx.shapes:::colors_print(palette_colors())
     shinyinvoer::radioButtonsInput("colors_id", label = "Colores", colores)
   })
 
@@ -153,11 +161,14 @@ server <- function(input, output, session) {
     shape <- shape_load()
     label_id <- input$label_id
     if (!is.null(label_id)) {
-      shape@data <- shape@data |>
-        dplyr::mutate(labels = glue::glue(
-          cdmx.shapes:::labels_map(nms = label_id)) %>%
-            lapply(htmltools::HTML)
-        )
+      label_id <- intersect(label_id, names(shape@data))
+      if (!identical(label_id, character())) {
+        shape@data <- shape@data |>
+          dplyr::mutate(labels = glue::glue(
+            cdmx.shapes:::labels_map(nms = label_id)) %>%
+              lapply(htmltools::HTML)
+          )
+      }
     } else {
       shape@data$labels <- NA
     }
@@ -167,7 +178,13 @@ server <- function(input, output, session) {
 
   output$map_shape <- renderLeaflet({
     req(shape_to_plot())
-    plot_shapes(shape_to_plot())
+    req(palette_colors())
+    req(input$colors_id)
+    opts <- list(
+      colors = palette_colors()[[input$colors_id]],
+      var_num = input$numeric_id
+    )
+    plot_shapes(shape_to_plot(), opts = opts)
   })
 
   output$debug <- renderPrint({
