@@ -17,9 +17,16 @@ ui <- panelsPage(
     mode = "auto",
     color = "#435b69",
     background = "#FFF"),
-  shinypanels::modal(id = 'modal_download', title = " ", fullscreen = TRUE,
-                     id_title = "down-title", id_content = "tab-content-modal", id_wrapper = "tab-modal-down",
-                     div( div(class = "tab-head-modal", uiOutput("menu_modal")), div(class = "tab-body-modal", uiOutput("down_index")))
+  shinypanels::modal(id = 'modal_download',
+                     title = " ",
+                     fullscreen = TRUE,
+                     id_title = "down-title",
+                     id_content = "tab-content-modal",
+                     id_wrapper = "tab-modal-down",
+                     div( div(class = "tab-head-modal",
+                              uiOutput("menu_modal")),
+                          div(class = "tab-body-modal",
+                              uiOutput("down_index")))
   ),
   panel(title = " ",
         id = "azul",
@@ -65,7 +72,7 @@ server <- function(input, output, session) {
   # global info -------------------------------------------------------------
 
   readRenviron(".Renviron")
-  urlInfo <- Sys.getenv("ckanUrl")
+  url_info <- Sys.getenv("ckanUrl")
 
   par <- list(ckanConf = NULL)
 
@@ -79,7 +86,13 @@ server <- function(input, output, session) {
   info_url <- reactive({
     linkInfo <- url_par()$inputs$ckanConf
     if (is.null(linkInfo)) linkInfo <-  "cd29b08a-50a3-486a-9bea-12d745e2964c"
-    cdmx.shapes:::read_ckan_info(url = urlInfo, linkInfo = linkInfo)
+    cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
+  })
+
+
+  dic_ckan <- reactive({
+    req(info_url())
+    cdmx.shapes:::read_ckan_dic(url = url_info, info_url()$package_id)
   })
 
   # read url from ckan ------------------------------------------------------
@@ -194,7 +207,7 @@ server <- function(input, output, session) {
   })
 
 
-  output$map_shape <- renderLeaflet({
+  map_down <- reactive({
     req(shape_to_plot())
     req(palette_colors())
     req(input$colors_id)
@@ -203,6 +216,11 @@ server <- function(input, output, session) {
       var_num = input$numeric_id
     )
     plot_shapes(shape_to_plot(), opts = opts)
+  })
+
+  output$map_shape <- renderLeaflet({
+   req(map_down())
+    map_down()
   })
 
 
@@ -215,10 +233,24 @@ server <- function(input, output, session) {
   })
 
   output$menu_modal <- renderUI({
-    cdmx.shapes:::menu_buttons(ids = c("datos_dw", "viz_dw", "api_dw"), labels = c("Base de datos", "Gráfica", "API"))
+    cdmx.shapes:::menu_buttons(ids = c("datos_dw", "viz_dw", "api_dw"),
+                               labels = c("Base de datos", "Gráfica", "API"))
   })
 
 
+  params_markdown <- reactive({
+    req(map_down())
+    req(info_url())
+    list(viz = reactive(map_down()),
+         title = gsub("\\*", "\\\\*",info_url()$name),
+         subtitle = info_url()$resource_subtitle,
+         fuentes =   paste0("<span style='font-weight:700;'>Fuente: </span>", dic_ckan$listCaptions$label, "<br/>",
+                            tags$a(href= paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan$listCaptions$id),
+                                   paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan$listCaptions$id), target="_blank"
+                            )
+         )
+    )
+  })
 
   output$debug <- renderPrint({
     print(class(shape_load())[1])

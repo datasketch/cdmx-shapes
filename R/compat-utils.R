@@ -6,13 +6,39 @@ read_ckan_info <- function(url, linkInfo) {
   listConf$result
 }
 
+read_ckan_dic <- function(url, idDic) {
+  if (is.null(url)) return()
+  if (is.null(idDic)) return()
+  dicUrl <- paste0(url, "package_show?id=", idDic)
+  listDic <- jsonlite::fromJSON(dicUrl)
+  listAll <-
+    purrr::map(seq_along(listDic), function(i) {
+      if (!"resources" %in% names(listDic[[i]])) return()
+      listDic[[i]]
+    }) |>
+    purrr::discard(is.null)
+  listAll <- listAll[[1]]
+
+
+  listDic <- listAll$resources
+
+  listUrl <- listDic |> dplyr::select(name, format, url)
+  listUrl$format <- gsub("\\.", "",tolower(listUrl$format))
+
+  listDic <- list(
+    listCaptions = list(label = listAll$organization$title, id = listAll$organization$name),
+    listLicense = list(id = listAll$license_id, title = listAll$license_title, url = listAll$license_url),
+    listResources = listUrl
+  )
+  listDic
+}
 
 labels_map <- function (nms) {
   label_ftype <- nms
   tooltip <- paste0(
     purrr::map(seq_along(label_ftype), function(i) {
       paste0(label_ftype[i], ": {", label_ftype[i], "}")
-    }) %>% unlist(), collapse = "<br/>")
+    }) |> unlist(), collapse = "<br/>")
   tooltip
 }
 
@@ -74,3 +100,8 @@ menu_buttons <- function(ids = NULL, labels = NULL, ...) {
 
   l
 }
+
+
+
+
+
