@@ -29,6 +29,9 @@ ui <- panelsPage(
                           div(class = "tab-body-modal",
                               uiOutput("down_index")))
   ),
+  shinypanels::modal(id = 'modal_viz_info', title = "Descripción", uiOutput("info_plots"), id_wrapper = "des_mod"),
+  shinypanels::modal(id = 'modal_rec_info', title = "Recursos", uiOutput("info_recs"), id_wrapper = "rec_mod"),
+
   panel(title = " ",
         id = "azul",
         can_collapse = FALSE,
@@ -62,7 +65,12 @@ ui <- panelsPage(
         body =  div(
           # verbatimTextOutput("debug"),
           leafletOutput("map_shape", height = 620)
-        )
+        ),
+        footer =
+          div(style = "display:flex;align-items: center;background: #F7F7F7;justify-content: space-between;",
+              uiOutput("summaryInfo"),
+              uiOutput("infoButt")
+          )
   )
 )
 
@@ -220,7 +228,7 @@ server <- function(input, output, session) {
   })
 
   output$map_shape <- renderLeaflet({
-   req(map_down())
+    req(map_down())
     map_down()
   })
 
@@ -494,7 +502,7 @@ datos <- content$result$records
           #if (input$vizDownFormat == "1") ext <- ".jpg"
           if (input$vizDownFormat == "1") ext <- ".pdf"
           if (input$vizDownFormat == "2") ext <- ".html"
-           print("entroooooo")
+          print("entroooooo")
           cdmx.shapes:::download_viz(params = params_markdown(),
                                      file = file,
                                      ext = ext,
@@ -505,26 +513,120 @@ datos <- content$result$records
   )
 
 
-  output$debug <- renderPrint({
-    print(class(shape_load())[1])
+  # info footer -------------------------------------------------------------
+
+  summary_info <- reactive({
+    tryCatch({
+      req(shape_fringe())
+
+      nrowIni <- nrow(shape_fringe()$data)
+
+      pctgView <- 100
+      nDig <- 2
+      if (pctgView == 100) nDig <- 0
+      HTML(paste0(
+        "<div class = 'dataSummary'>",
+        "<div class = 'infoAll'>",format(nrowIni, big.mark = ","), "<span class = 'infoAdd'>Total</span></div>",
+        "<div class = 'infoAll footer-center-line'>",format( nrowIni, big.mark = ","), "<span class = 'infoAdd'>Visualizados</span></div>",
+        "<div class = 'infoAll footer-center-line'>",format(pctgView, big.mark = ",", digits = 2, nsmall = nDig), "%<span class = 'infoAdd'> del total</span></div>",
+        # "<div class = 'infoAll' style = 'border-left: 1px solid;margin-left:3%;padding: 0% 3%;'>",format(sum(Nmv$Total, na.rm = TRUE), big.mark = ","), "<span class = 'infoAdd'>No identificados</span></div>
+        "</div>"
+      ))
+    },
+    error = function(cond) {
+      return()
+    })
+  })
+
+  output$summaryInfo <- renderUI({
+    req(summary_info())
+    summary_info()
+  })
+
+  output$infoButt <- renderUI({
+    div(style = "display: flex;gap:20px; margin: 1px 20px 1px 0px;",
+        actionButton("descripcion_modal", "Descripción"),
+        actionButton("recursos_modal", "Recursos")
+    )
+  })
+
+  observeEvent(input$descripcion_modal, {
+    shinypanels::showModal("modal_viz_info")
+  })
+
+  output$info_plots <- renderUI({
+    tx <- info_url()$name
+    if (is.null(info_url()$name)) tx <- ""
+    tx <- markdown::markdownToHTML(text = tx, fragment.only = TRUE)
+    ds <- info_url()$description
+    if (is.null(info_url()$description))  ds <- ""
+    ds <- markdown::markdownToHTML(text = ds, fragment.only = TRUE)
+    HTML(
+      paste0("<b>",tx, "</b><br/><br/>", ds)
+    )
   })
 
 
 
-  # output$viz_icons <- renderUI({
-  #   suppressWarnings(
-  #     shinyinvoer::buttonImageInput("viz_selection",
-  #                                   " ",
-  #                                   images = "map",
-  #                                   tooltips = "Mapa",
-  #                                   path = "viz_icons/",
-  #                                   active = "map",
-  #                                   imageStyle = list(shadow = TRUE,
-  #                                                     borderColor = "#ffffff",
-  #                                                     padding = "3px")
-  #     )
-  #   )
-  # })
+
+
+  observeEvent(input$recursos_modal, {
+    shinypanels::showModal("modal_rec_info")
+  })
+
+
+  observe({
+    # infoResources <- listDic$listResources$format
+    infoResources <- dic_ckan()$listResources
+    if (is.null(infoResources)) return()
+    purrr::map(1:nrow(infoResources), function(i) {
+      output[[paste0("infoResources", i)]] <- downloadHandler(
+        filename = paste0(infoResources$name[i], ".", infoResources$format[i]),
+        content = function(file) {
+          print(infoResources$format[i])
+          saveFile <- paste0(tempdir(), "/pdf", i, ".", infoResources$format[i])
+          print(saveFile)
+          download.file(url = infoResources$url[i],
+                        destfile = saveFile)
+          file.copy(saveFile, file)
+        }
+      )
+    })
+  })
+
+
+
+  output$info_recs <- renderUI({
+    infoResources <- dic_ckan()$listResources
+    if (is.null(infoResources)) return()
+
+    div(style="display: inline-grid;gap: 21px;",
+        purrr::map(1:nrow(infoResources), function(i) {
+          print("format")
+          print(infoResources$format[i])
+          format <- infoResources$format[i]
+          color <- "#B6C9C9"
+            if (format == "csv") color <- "#CCC41C"
+            if (format == "xlsx") color <- "#71B365"
+            if (format == "pdf") color <- "#E0051E"
+            if (format == "shp") color <- "#C9BF9C"
+            if (format == "zip") color <- "#696DA9"
+            if (format == "geojson") color <- "#8B3D08"
+            if (format == "json") color <- "#CE5858"
+            if (format == "json") color <- "#CE5858"
+            if (format %in% c("doc", "docx")) color <- "#3E9FCC"
+
+          div (class = "down-resources",
+               HTML(paste0('<span class="text-center rounded font-weight-bold flex-shrink-0 mr-2 px-2 py-1 text-sm text-white" property="dc:format" data-format="csv" style="width: 60px;background-color:',color,'";">',
+                           img(src= 'img/descarga-icon-w.svg', class = "img-down"),
+                           '<span class="ml-1">',format,'</span>
+                        </span>')),
+               downloadLink(paste0("infoResources", i), span(style="font-size: 13px;color: #435b69;",infoResources$name[i]))
+          )
+
+        })
+    )
+  })
 
 }
 
