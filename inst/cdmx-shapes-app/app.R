@@ -6,6 +6,7 @@ library(shiny)
 library(shinybusy)
 library(shinypanels)
 library(tidyr)
+library(webshot2)
 
 ui <- panelsPage(
   includeCSS("www/custom.css"),
@@ -244,13 +245,265 @@ server <- function(input, output, session) {
     list(viz = reactive(map_down()),
          title = gsub("\\*", "\\\\*",info_url()$name),
          subtitle = info_url()$resource_subtitle,
-         fuentes =   paste0("<span style='font-weight:700;'>Fuente: </span>", dic_ckan$listCaptions$label, "<br/>",
-                            tags$a(href= paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan$listCaptions$id),
-                                   paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan$listCaptions$id), target="_blank"
+         fuentes =   paste0("<span style='font-weight:700;'>Fuente: </span>", dic_ckan()$listCaptions$label, "<br/>",
+                            tags$a(href= paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id),
+                                   paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id), target="_blank"
                             )
          )
     )
   })
+
+  list_api <- reactive({
+    api <- data.frame(id = c("punto", "consulta", "js", "py", "r"),
+                      label = c("Punto de acceso API &raquo;",
+                                "Consultando &raquo;",
+                                "Ejemplo: Javascript &raquo;",
+                                "Ejemplo: Python &raquo;",
+                                "Ejemplo: R &raquo;")
+    )
+    l <- purrr::map(1:nrow(api), function(z){
+      actionButton(inputId = api[z,]$id, label = HTML(api[z,]$label), class = "apiClick")
+    })
+    l
+  })
+
+  observe({
+    if (is.null(list_api)) return()
+    l <- list_api()
+    last_btn <- input$last_apiClick
+    link_api <- url_par()$inputs$ckanConf
+    if (!is.null(last_btn)) {
+      button_id <- which(c("punto", "consulta", "js", "py", "r") %in% last_btn)
+      df <- list(
+        div(class='api-info',
+            div(style='padding:10px 0px;margin-top: 20px;',
+                "El API de Datos es accesible a través de las siguientes acciones de la API de acción de CKAN."
+            ),
+            HTML("
+          <table id='table-punto-api'>
+          <tr>
+          <th>Consulta</th>
+          <td><a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search</a></td>
+          </tr>
+          <tr>
+          <th>Consulta (via SQL)</th>
+          <td><a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql</a></td>
+          </tr>
+          </table>
+          </div>"
+
+            )),
+
+        div(class='api-info',
+            div(style='padding:10px 0px;margin-top: 20px;font-weight: 500;',
+                "Ejemplo de consulta (primeros cinco resultados)"),
+            HTML(paste0(
+              "<a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
+              link_api,"&limit=5' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
+              link_api,"&limit=5</a>"
+            )),
+            div(style='padding:10px 0px;margin-top: 10px;font-weight: 500;',
+                "Ejemplo de consulta (resultados que contienen 'jones')"),
+            HTML(paste0(
+              "<a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
+              link_api,"&q=jones' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
+              link_api,"&q=jones'</a>"
+            )),
+            div(style='padding:10px 0px;margin-top: 10px;font-weight: 500;',
+                "Consulta ejemplo (vía SQL)"),
+            HTML(paste0(
+              "<a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql?sql=SELECT * from ",
+              link_api,"WHERE title LIKE 'jones'' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql?sql=SELECT * from ",
+              link_api,"WHERE title LIKE 'jones'l</a>"
+            ))
+        ),
+
+        div(class='api-info',
+            div(style='padding:10px 0px;margin-top: 20px;', "Una consulta simple ajax (JSONP) a la data API usando jQuery."),
+            div(
+              HTML(paste0("
+<pre> <code>
+var data = {
+resource_id: '", link_api,"' // the resource id
+limit: 5, // get 5 results
+q: 'jones' // query for 'jones'
+};
+$.ajax({
+url: 'https://datos-ckandev.cdmx.gob.mx/api/3/action/datastore_search',
+data: data,
+dataType: 'jsonp',
+success: function(data) {
+alert('Total results found: ' + data.result.total)
+}
+});
+</code></pre>
+"
+              ))
+            )),
+        div(class='api-info',
+            div(
+              HTML(paste0("
+<pre><code>
+import requests
+
+url = 'https://datos.cdmx.gob.mx/api/3/action/'
+
+params = {
+    'resource_id': '", link_api,"',
+    'limit': 5,
+    'q': 'jones'
+    }
+
+recurso = requests.get(url + 'datastore_search', params)
+  </code>
+</pre>"
+              ))
+            )),
+        div(class='api-info',
+            div(
+              HTML(paste0('
+<pre><code>
+library(httr)
+library(jsonlite)
+library(tidyverse)
+
+url <- "https://datos.cdmx.gob.mx/api/3/action/"
+id <- "', link_api,'"
+
+consulta <- paste0(url, "datastore_search?", "resource_id=", id, "&limit=5", "&q=jones")
+
+request <- GET(consulta)
+content <- rawToChar(request$content) %>%
+      fromJSON()
+datos <- content$result$records
+  </code>
+</pre>'
+              ))
+            ))
+      )
+      l[[button_id]] <- gsub("apiClick", "apiClick api_active", l[[button_id]])
+      l[[button_id]] <- HTML(paste0(paste(l[[button_id]], collapse = '')))
+      l[[button_id]] <- div(l[[button_id]],
+                            df[[button_id]]
+      )
+      l
+    }
+    output$basicos <- renderUI({
+      l
+    })
+  })
+
+  last_click <- reactive({
+    lc <- input$last_click
+    if (is.null(lc)) lc <- "datos_dw"
+    lc
+  })
+
+  output$down_index <- renderUI({
+    req(last_click())
+    if (last_click() == "datos_dw") {
+      div(class = "tab-data-down",
+          div(class = "data-opts",
+              shinyinvoer::radioButtonsInput("dataDownId", p(class = "label-modal-rd", "Datos"), choices =  c("Base completa"))
+          ),
+          div(class = "data-format",
+              shinyinvoer::radioButtonsInput("dataDownFormat", p(class = "label-modal-rd", "Formato"), choices =  c("CSV", "Json", "Excel"))
+          ),
+          div(class = "donwData-button",
+              downloadButton("dataToDownId", "Descargar", class = "data-dw-button")
+          )
+      )
+    } else if (last_click() == "viz_dw") {
+      div(class = "tab-data-down",
+          div(class = "viz-format",
+              shinyinvoer::radioButtonsInput("vizDownFormat", p(class = "label-modal-rd", "Formato"), choices =  c("PNG", "PDF", "HTML"))
+          ),
+          div(class = "donwViz-button",
+              downloadButton("vizToDownId", "Descargar", class = "viz-dw-button")
+          )
+      )
+    } else if (last_click() == "api_dw") {
+
+      req(list_api())
+
+      div(
+        HTML(
+          '<div class="text-api">Acceso al recurso de datos mediante una API web con servicio de consulta completo.
+            Más información en <a id="link-modal" href="https://docs.ckan.org/en/2.9/api/index.html" target="blank">la documentación del API de Datos principal</a>
+          y del <a id="link-modal" href="https://docs.ckan.org/en/2.9/maintaining/datastore.html?highlight=datastore#the-datastore-api" target="blank">DataStore de CKAN</a>.</div>'
+        ),
+        div(
+          uiOutput("basicos")
+        )
+      )
+    } else {
+      return()
+    }
+  })
+
+
+  output$dataToDownId <- downloadHandler(
+    filename = function() {
+      req(input$dataDownFormat)
+      ext <- ".csv"
+      if (input$dataDownFormat == "1") ext <- ".json"
+      if (input$dataDownFormat == "2") ext <- ".xlsx"
+      paste0("data-", Sys.Date(), ext)
+    },
+    content = function(file) {
+      shiny::withProgress(
+        message = "En proceso",
+        value = 0,
+        {
+          req(input$dataDownId)
+          data <- shape_fringe()$data
+
+          if (grepl("csv", file)) {
+            readr::write_csv(data, file)
+          } else if (grepl("json", file)) {
+            jsonlite::write_json(data, file)
+          } else {
+            rio::export(data, file)
+          }
+        })
+    }
+  )
+
+  output$vizToDownId <- downloadHandler(
+    filename = function() {
+      req(input$vizDownFormat)
+      ext <- ".png"
+      #if (input$vizDownFormat == "1") ext <- ".jpg"
+      if (input$vizDownFormat == "1") ext <- ".pdf"
+      if (input$vizDownFormat == "2") ext <- ".html"
+      paste0("viz-", Sys.Date(), ext)
+    },
+    content = function(file) {
+
+      req(input$vizDownFormat)
+      req(params_markdown())
+      print("in fileeee")
+      shiny::withProgress(
+        message = "En proceso",
+        value = 0,
+        {
+          shiny::incProgress(1/10)
+          Sys.sleep(1)
+          shiny::incProgress(5/10)
+          ext <- ".png"
+          #if (input$vizDownFormat == "1") ext <- ".jpg"
+          if (input$vizDownFormat == "1") ext <- ".pdf"
+          if (input$vizDownFormat == "2") ext <- ".html"
+           print("entroooooo")
+          cdmx.shapes:::download_viz(params = params_markdown(),
+                                     file = file,
+                                     ext = ext,
+                                     template_file = "markdown/template.Rmd")
+        })
+
+    }
+  )
+
 
   output$debug <- renderPrint({
     print(class(shape_load())[1])

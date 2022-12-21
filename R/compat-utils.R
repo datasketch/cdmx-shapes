@@ -102,6 +102,27 @@ menu_buttons <- function(ids = NULL, labels = NULL, ...) {
 }
 
 
+download_viz <- function (params, file, ext, template_file) {
 
+  file.copy("template.Rmd", template_file, overwrite = TRUE)
+
+  if (ext == ".html") {
+    rmarkdown::render(template_file, output_file = file,
+                      params = params,
+                      envir = new.env(parent = globalenv())
+    )
+  } else {
+    saveFile <- paste0(tempdir(), "/report.html")
+    rmarkdown::render(template_file, output_file = saveFile,
+                      params = params,
+                      envir = new.env(parent = globalenv())
+    )
+    screenFile <-  paste0(tempdir(), "/screen", ext)
+    print(screenFile)
+    webshot2::webshot(url = saveFile, file = screenFile, delay = 15)
+    file.copy(screenFile, file)
+  }
+
+}
 
 

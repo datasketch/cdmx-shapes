@@ -23,7 +23,7 @@ a {
  letter-spacing: -0.1px;
 }
 
-a#description_modal_ui_1-PdfReclasificacion,#description_modal_ui_1-PdfUpdate,#description_modal_ui_1-PdfOldUpdate {
+a#PdfReclasificacion,#PdfUpdate,#PdfOldUpdate {
  color: #435b69 !important;
  font-size: 13px !important;
 }
@@ -298,8 +298,8 @@ scroll STYLES
 }
 
 
-#info_footer_ui_1-descripcion_modal, #info_footer_ui_1-dicc_modal,
-#info_footer_ui_1-recursos_modal {
+#descripcion_modal, #dicc_modal,
+#recursos_modal {
  /* UI Properties */
   width: 100px;
   border: 1px solid #637381 !important;
@@ -336,7 +336,7 @@ scroll STYLES
     background-color: transparent !important;
 }
 
-.modal#download_viz_ui_1-modal_download {
+.modal#modal_download {
    background: rgba(0, 0, 0, 0.6) !important;
 }
 
@@ -346,7 +346,7 @@ scroll STYLES
   margin-left: 5px !important;
 }
 
-#download_viz_ui_1-menu_modal {
+#menu_modal {
  display: grid;
  grid-template-columns: 0.3fr 0.3fr 0.3fr !important;
 }
@@ -371,7 +371,7 @@ scroll STYLES
  margin-right: 25px !important;
 }
 
-#download_viz_ui_1-vizToDownId,#download_viz_ui_1-dataToDownId {
+#vizToDownId,#dataToDownId {
   background-color: #637083 !important;
   border-radius: 3.28611px !important;
   color: #ffffff;
