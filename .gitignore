@@ -5,6 +5,6 @@
 .Renviron
 .Rhistory
 .Rprofile
-inst/cdmx.shapes/rsconnect
+inst/cdmx.shapes/rsconnect/
 inst/cdmx.shapes/.Rbuidignore
 inst/cdmx.shapes/.DS_Store
