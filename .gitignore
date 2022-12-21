@@ -5,6 +5,6 @@
 .Renviron
 .Rhistory
 .Rprofile
-inst/pharma-corruption-app/rsconnect
-inst/pharma-corruption-app/.Rbuidignore
-inst/pharma-corruption-app/.DS_Store
+inst/cdmx.shapes/rsconnect
+inst/cdmx.shapes/.Rbuidignore
+inst/cdmx.shapes/.DS_Store
