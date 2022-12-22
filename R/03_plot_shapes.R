@@ -34,8 +34,8 @@ plot_shapes <- function(shape_data, opts) {
       color <- fill_color
     } else {
       pal <- leaflet::colorNumeric(rev(opts$colors),
-                          domain = shape_data[[opts$var_num]])
-      fill_color <- pal(shape_data@data[[opts$var_num]])
+                          domain = as.numeric(shape_data[[opts$var_num]]))
+      fill_color <- pal(as.numeric(shape_data@data[[opts$var_num]]))
       color <- opts$colors[1]
     }
 
