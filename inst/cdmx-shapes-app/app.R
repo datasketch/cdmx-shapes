@@ -94,7 +94,7 @@ server <- function(input, output, session) {
 
   info_url <- reactive({
     linkInfo <- url_par()$inputs$ckanConf
-    if (is.null(linkInfo)) linkInfo <-  "cd29b08a-50a3-486a-9bea-12d745e2964c"
+    if (is.null(linkInfo)) linkInfo <-  "73c77f84-246a-48c4-ae7d-41b90ab478a4"
     cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
   })
 
@@ -153,13 +153,14 @@ server <- function(input, output, session) {
   # variables numericas a graficar
   numeric_var <- reactive({
     req(shape_fringe())
+    if (nrow(shape_fringe()$data) < 2) return()
     if (class(shape_load())[1] == "SpatialPointsDataFrame") return()
     dic <- shape_fringe()$dic
     if (nrow(dic) == 0) return()
-    dic$hdType[dic$id == "ano"] <- "Yea"
-    dic$hdType[dic$id == "id"] <- "Uid"
-    dic$hdType[dic$id == "cve_ent"] <- "___"
-    dic$hdType[dic$id == "c_ingrtrim"] <- "___"
+    dic$hdType[grepl("ano", dic$id)] <- "Yea"
+    dic$hdType[grepl("id", dic$id)] <- "Uid"
+    dic$hdType[grepl("cve_ent|c_ingrtrim", dic$id)] <- "___"
+
     dic <- dic |>
       dplyr::filter(hdType == "Num")
     if (nrow(dic) == 0) return()
@@ -220,7 +221,10 @@ server <- function(input, output, session) {
     req(shape_to_plot())
     req(palette_colors())
     req(input$colors_id)
+    data <- NULL
+    if (!is.null(input$numeric_id)) data <- "si"
     opts <- list(
+      data = data,
       colors = palette_colors()[[input$colors_id]],
       var_num = input$numeric_id
     )

@@ -8,11 +8,18 @@ unzip_shape <- function(url, export_dir) {
     unlist() |>
     setdiff(export_dir)
   shape_dsn <- shape_info[1]
+  try_dsn <- substring(shape_dsn,
+                       regexpr("\\.([[:alnum:]]+)$", shape_dsn) + 1L)
+  if (shape_dsn == try_dsn) {
   shape_info <- shape_info[-1]
+  } else {
+    shape_dsn <- NULL
+  }
   ext <- substring(shape_info,
                    regexpr("\\.([[:alnum:]]+)$", shape_info) + 1L)
   shape_layer <- gsub(paste0(".", ext, collapse = "|"), "", shape_info) |>
-    unique()
+    unique() |> setdiff("license")
+
   list(
     shape_file = export_dir,
     shape_dsn = shape_dsn,

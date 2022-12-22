@@ -25,17 +25,30 @@ plot_shapes <- function(shape_data, opts) {
                                 fillOpacity = 1)
   }
   if (shape_class == "SpatialPolygonsDataFrame") {
+    fill_opacity <- 1
+    stroke <- FALSE
+    if (is.null(opts$data)) {
+      stroke <- TRUE
+      fill_opacity <- 0.3
+      fill_color <- opts$colors[1]
+      color <- fill_color
+    } else {
+      pal <- leaflet::colorNumeric(rev(opts$colors),
+                          domain = shape_data[[opts$var_num]])
+      fill_color <- pal(shape_data@data[[opts$var_num]])
+      color <- opts$colors[1]
+    }
 
-    pal <- leaflet::colorNumeric(rev(opts$colors),
-                        domain = shape_data[[opts$var_num]])
     lf <- lf |>
       leaflet::addPolygons(data = shape_data,
                            label = ~labels,
-                           stroke = FALSE,
-                           fillOpacity = 1,
-                           smoothFactor = 0.5,
-                           fillColor = pal(shape_data@data[[opts$var_num]])
-      )
+                           stroke = stroke,
+                           weight = 1,
+                           opacity = 1,
+                           fillOpacity = fill_opacity,
+                           smoothFactor = 0,
+                           color = color,
+                           fillColor = fill_color)
   }
 
   lf
