@@ -94,7 +94,7 @@ server <- function(input, output, session) {
 
   info_url <- reactive({
     linkInfo <- url_par()$inputs$ckanConf
-    if (is.null(linkInfo)) linkInfo <-  "73c77f84-246a-48c4-ae7d-41b90ab478a4"
+    if (is.null(linkInfo)) linkInfo <-  "cd29b08a-50a3-486a-9bea-12d745e2964c"
     cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
   })
 
@@ -258,7 +258,7 @@ server <- function(input, output, session) {
          title = gsub("\\*", "\\\\*",info_url()$name),
          subtitle = info_url()$resource_subtitle,
          fuentes =   paste0("<span style='font-weight:700;'>Fuente: </span>", dic_ckan()$listCaptions$label, "<br/>",
-                            tags$a(href= paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id),
+                            tags$a(href= paste0("https://datos.cdmx.gob.mx/dataset/", info_url()$package_id, "/resource/", info_url()$id),
                                    paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id), target="_blank"
                             )
          )
