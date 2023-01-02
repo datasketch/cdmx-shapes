@@ -259,7 +259,7 @@ server <- function(input, output, session) {
          subtitle = info_url()$resource_subtitle,
          fuentes =   paste0("<span style='font-weight:700;'>Fuente: </span>", dic_ckan()$listCaptions$label, "<br/>",
                             tags$a(href= paste0("https://datos.cdmx.gob.mx/dataset/", info_url()$package_id, "/resource/", info_url()$id),
-                                   paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id), target="_blank"
+                                   paste0("https://datos.cdmx.gob.mx/dataset/", info_url()$package_id), target="_blank"
                             )
          )
     )
