@@ -65,6 +65,7 @@ RUN Rscript -e 'remotes::install_github("rstudio/chromote@e1d2997932671642d12bef
 RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone
+RUN R -e 'remotes::install_local(upgrade="never")'
 RUN rm -rf /build_zone
 EXPOSE 3838
 CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0');cdmx.shapes::run_app())"
