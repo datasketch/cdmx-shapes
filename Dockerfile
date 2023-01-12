@@ -67,5 +67,7 @@ ADD . /build_zone
 WORKDIR /build_zone
 RUN R -e 'remotes::install_local(upgrade="never")'
 RUN rm -rf /build_zone
+RUN echo ckanUrl=${CKAN_URL} > .Renviron
+RUN echo CHROMOTE_CHROME=/usr/bin/vivaldi >> .Renviron
 EXPOSE 3838
 CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0');cdmx.shapes::run_app()"

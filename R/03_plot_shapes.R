@@ -34,7 +34,7 @@ plot_shapes <- function(shape_data, opts) {
       color <- fill_color
     } else {
       pal <- leaflet::colorNumeric(rev(opts$colors),
-                          domain = as.numeric(shape_data[[opts$var_num]]))
+                                   domain = as.numeric(shape_data[[opts$var_num]]))
       fill_color <- pal(as.numeric(shape_data@data[[opts$var_num]]))
       color <- opts$colors[1]
     }
@@ -48,7 +48,11 @@ plot_shapes <- function(shape_data, opts) {
                            fillOpacity = fill_opacity,
                            smoothFactor = 0,
                            color = color,
-                           fillColor = fill_color)
+                           fillColor = fill_color) |>
+      leaflet::addLegend(pal = pal, values = shape_data@data[[opts$var_num]],
+                         opacity = 0.7,
+                         title = NULL,
+                         position = "bottomright")
   }
 
   lf
