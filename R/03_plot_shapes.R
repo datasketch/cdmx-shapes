@@ -25,7 +25,7 @@ plot_shapes <- function(shape_data, opts) {
                                 fillOpacity = 1)
   }
   if (shape_class == "SpatialPolygonsDataFrame") {
-    fill_opacity <- 1
+    fill_opacity <- 0.6
     stroke <- FALSE
     if (is.null(opts$data)) {
       stroke <- TRUE
@@ -44,7 +44,7 @@ plot_shapes <- function(shape_data, opts) {
                            label = ~labels,
                            stroke = stroke,
                            weight = 1,
-                           opacity = 1,
+                           opacity = 0.8,
                            fillOpacity = fill_opacity,
                            smoothFactor = 0,
                            color = color,
@@ -52,7 +52,7 @@ plot_shapes <- function(shape_data, opts) {
       leaflet::addLegend(pal = pal, values = shape_data@data[[opts$var_num]],
                          opacity = 0.7,
                          title = NULL,
-                         position = "bottomright")
+                         position = "topright")
   }
 
   lf
