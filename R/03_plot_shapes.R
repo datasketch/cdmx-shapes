@@ -40,11 +40,15 @@ plot_shapes <- function(shape_data, opts) {
     }
 
     lf <- lf |>
+
+      leaflet::addTopoJSON(topojson = mayorsCdmx,
+                           weight = 0.5, opacity = 0.8,
+                           fillColor = "transparent",
+                           color = "#000000") |>
       leaflet::addPolygons(data = shape_data,
                            label = ~labels,
                            stroke = stroke,
-                           weight = 1,
-                           opacity = 0.8,
+                           opacity = 0,
                            fillOpacity = fill_opacity,
                            smoothFactor = 0,
                            color = color,
