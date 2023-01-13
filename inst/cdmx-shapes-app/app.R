@@ -222,7 +222,6 @@ server <- function(input, output, session) {
 
   output$fuente <- renderUI({
     req(dic_ckan())
-    print(dic_ckan())
     tags$a(href= paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id),
            paste0("Fuente: ", dic_ckan()$listCaptions$label), target="_blank")
   })
