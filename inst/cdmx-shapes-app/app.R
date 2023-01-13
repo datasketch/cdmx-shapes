@@ -1,4 +1,3 @@
-#webshot::install_phantomjs()
 library(cdmx.shapes)
 library(dsmodules)
 library(leaflet)
@@ -64,7 +63,11 @@ ui <- panelsPage(
         ),
         body =  div(
           # verbatimTextOutput("debug"),
-          leafletOutput("map_shape", height = 620)
+          leafletOutput("map_shape", height = 620),
+          div(style="display: flex;justify-content: space-between;",
+              uiOutput("fuente"),
+              uiOutput("logos_add")
+          )
         ),
         footer =
           div(style = "display:flex;align-items: center;background: #F7F7F7;justify-content: space-between;",
@@ -94,7 +97,7 @@ server <- function(input, output, session) {
 
   info_url <- reactive({
     linkInfo <- url_par()$inputs$ckanConf
-    if (is.null(linkInfo)) linkInfo <-  "ace56b90-85b6-47ed-a9d6-acf413f61dda"
+    if (is.null(linkInfo)) linkInfo <-  "dee868ab-5679-455f-912c-cf6b94d694b0"
     cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
   })
 
@@ -110,7 +113,7 @@ server <- function(input, output, session) {
     req(info_url())
     url_shape <- info_url()$url
     unlink("down_shapes/", recursive = TRUE)
-    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/ace56b90-85b6-47ed-a9d6-acf413f61dda/download/ingreso_promedio_trimestral.zip"
+    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/dee868ab-5679-455f-912c-cf6b94d694b0/download/ingreso_promedio_trimestral.zip"
     unzip_shape(url = url_shape, export_dir = "down_shapes")
   })
 
@@ -216,6 +219,19 @@ server <- function(input, output, session) {
     shape
   })
 
+
+  output$fuente <- renderUI({
+    req(dic_ckan())
+    print(dic_ckan())
+    tags$a(href= paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id),
+           paste0("Fuente: ", dic_ckan()$listCaptions$label), target="_blank")
+  })
+
+  output$logos_add <- renderUI({
+    req(dic_ckan())
+    #if (is.null(dic_ckan()$url)) return()
+    HTML(paste0("<span style='color:#3998A5;'>Licencia: </span>", dic_ckan()$listLicense$title))
+  })
 
   map_down <- reactive({
     req(shape_to_plot())
@@ -419,7 +435,7 @@ datos <- content$result$records
               shinyinvoer::radioButtonsInput("dataDownId", p(class = "label-modal-rd", "Datos"), choices =  c("Base completa"))
           ),
           div(class = "data-format",
-              shinyinvoer::radioButtonsInput("dataDownFormat", p(class = "label-modal-rd", "Formato"), choices =  c("CSV", "Json", "Excel"))
+              shinyinvoer::radioButtonsInput("dataDownFormat", p(class = "label-modal-rd", "Formato"), choices =  c("CSV", "Json", "Excel", "SHP"))
           ),
           div(class = "donwData-button",
               downloadButton("dataToDownId", "Descargar", class = "data-dw-button")
@@ -460,6 +476,7 @@ datos <- content$result$records
       ext <- ".csv"
       if (input$dataDownFormat == "1") ext <- ".json"
       if (input$dataDownFormat == "2") ext <- ".xlsx"
+      if (input$dataDownFormat == "3") ext <- ".zip"
       paste0("data-", Sys.Date(), ext)
     },
     content = function(file) {
@@ -474,8 +491,11 @@ datos <- content$result$records
             readr::write_csv(data, file)
           } else if (grepl("json", file)) {
             jsonlite::write_json(data, file)
-          } else {
+          } else if (grepl("xlsx", file)){
             rio::export(data, file)
+          } else {
+            download.file(url = url_shape <- info_url()$url,
+                          destfile = file)
           }
         })
     }
