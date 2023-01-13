@@ -3,7 +3,13 @@ plot_shapes <- function(shape_data, opts) {
   if (is.null(shape_data)) return()
   shape_class <- class(shape_data)[1]
 
-  lf <- leaflet::leaflet() |>
+  lf <- leaflet::leaflet(
+    option = leaflet::leafletOptions(
+      zoomSnap = 0.25,
+      zoomDelta = 0.25,
+      zoomControl = TRUE,
+      minZoom = 10,
+      maxZoom = 15)) |>
     leaflet::addTiles(urlTemplate = "https://maps.geoapify.com/v1/tile/positron/{z}/{x}/{y}.png?&apiKey=f39345000acd4188aae1f2f4eed3ff14",
                       attribution = "positron")
 
@@ -40,7 +46,6 @@ plot_shapes <- function(shape_data, opts) {
     }
 
     lf <- lf |>
-
       leaflet::addTopoJSON(topojson = mayorsCdmx,
                            weight = 0.5, opacity = 0.8,
                            fillColor = "transparent",
@@ -59,6 +64,7 @@ plot_shapes <- function(shape_data, opts) {
                          position = "topright")
   }
 
-  lf
+  lf |>
+    leaflet::setView(lng = -99.2, lat = 19.33, 10.70)
 
 }
