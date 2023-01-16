@@ -11,7 +11,11 @@ plot_shapes <- function(shape_data, opts) {
       minZoom = 10,
       maxZoom = 15)) |>
     leaflet::addTiles(urlTemplate = "https://maps.geoapify.com/v1/tile/positron/{z}/{x}/{y}.png?&apiKey=f39345000acd4188aae1f2f4eed3ff14",
-                      attribution = "positron")
+                      attribution = "positron") |>
+  leaflet::addTopoJSON(topojson = mayorsCdmx,
+                       weight = 0.5, opacity = 0.8,
+                       fillColor = "transparent",
+                       color = "#000000")
 
 
   if (shape_class == "SpatialLinesDataFrame") {
@@ -31,7 +35,7 @@ plot_shapes <- function(shape_data, opts) {
                                 fillOpacity = 1)
   }
   if (shape_class == "SpatialPolygonsDataFrame") {
-    fill_opacity <- 0.6
+    fill_opacity <- 0.5
     stroke <- FALSE
     if (is.null(opts$data)) {
       stroke <- TRUE
@@ -46,19 +50,16 @@ plot_shapes <- function(shape_data, opts) {
     }
 
     lf <- lf |>
-      leaflet::addTopoJSON(topojson = mayorsCdmx,
-                           weight = 0.5, opacity = 0.8,
-                           fillColor = "transparent",
-                           color = "#000000") |>
       leaflet::addPolygons(data = shape_data,
                            label = ~labels,
-                           stroke = stroke,
-                           opacity = 0,
+                           stroke = TRUE,
+                           weight = 0.3,
+                           opacity = 1,
                            fillOpacity = fill_opacity,
                            smoothFactor = 0,
                            color = color,
                            fillColor = fill_color) |>
-      leaflet::addLegend(pal = pal, values = shape_data@data[[opts$var_num]],
+      leaflet::addLegend(pal = pal, values = as.numeric(shape_data@data[[opts$var_num]]),
                          opacity = 0.7,
                          title = NULL,
                          position = "topright")
