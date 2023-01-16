@@ -228,8 +228,13 @@ server <- function(input, output, session) {
 
   output$logos_add <- renderUI({
     req(dic_ckan())
-    #if (is.null(dic_ckan()$url)) return()
-    HTML(paste0("<span style='color:#3998A5;'>Licencia: </span>", dic_ckan()$listLicense$title))
+    if (is.null(dic_ckan()$url)) {
+      tx <- HTML(paste0("<span style='color:#3998A5;'>Licencia: </span>", dic_ckan()$listLicense$title))
+    } else {
+      tx <- HTML(paste0("<span style='color:#3998A5;'>Licencia: </span>", tags$a(
+        href= dic_ckan()$listLicense$url, target="blank", dic_ckan()$listLicense$title)))
+    }
+    tx
   })
 
   map_down <- reactive({
