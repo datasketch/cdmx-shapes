@@ -29,6 +29,7 @@ ui <- panelsPage(
                               uiOutput("down_index")))
   ),
   shinypanels::modal(id = 'modal_viz_info', title = "Descripción", uiOutput("info_plots"), id_wrapper = "des_mod"),
+  shinypanels::modal(id = 'modal_dic_info', title = "Diccionario", uiOutput("infoDics"), id_wrapper = "dic_mod"),
   shinypanels::modal(id = 'modal_rec_info', title = "Recursos", uiOutput("info_recs"), id_wrapper = "rec_mod"),
 
   panel(title = " ",
@@ -97,7 +98,7 @@ server <- function(input, output, session) {
 
   info_url <- reactive({
     linkInfo <- url_par()$inputs$ckanConf
-    if (is.null(linkInfo)) linkInfo <-  "ace56b90-85b6-47ed-a9d6-acf413f61dda"
+    if (is.null(linkInfo)) linkInfo <-  "ce383321-92de-4a13-8234-7756b520ee4e"
     cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
   })
 
@@ -113,7 +114,7 @@ server <- function(input, output, session) {
     req(info_url())
     url_shape <- info_url()$url
     unlink("down_shapes/", recursive = TRUE)
-    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/ace56b90-85b6-47ed-a9d6-acf413f61dda/download/ingreso_promedio_trimestral.zip"
+    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/ce383321-92de-4a13-8234-7756b520ee4e/download/ingreso_promedio_trimestral.zip"
     unzip_shape(url = url_shape, export_dir = "down_shapes")
   })
 
@@ -627,6 +628,7 @@ datos <- content$result$records
   output$infoButt <- renderUI({
     div(style = "display: flex;gap:20px; margin: 1px 20px 1px 0px;",
         actionButton("descripcion_modal", "Descripción"),
+        actionButton("dicc_modal", "Diccionario"),
         actionButton("recursos_modal", "Recursos")
     )
   })
@@ -648,6 +650,61 @@ datos <- content$result$records
   })
 
 
+  observeEvent(input$dicc_modal, {
+    shinypanels::showModal("modal_dic_info")
+  })
+
+  output$tableDic <- DT::renderDataTable({
+    df <- dic_to_labels()
+    if (is.null(dic_to_labels())) {
+      df <- shape_fringe()$dic
+      names(df) <- c("Nombre", "Etiqueta", "Tipo")
+      df <- dplyr::as_tibble(df)
+      df$Tipo <- as.character(df$Tipo)
+    }
+
+
+    print(class(df$Tipo))
+    #names(df) <- c("Nombre", "Etiqueta", "Descripción", "Tipo")
+    dtable <- DT::datatable(df,
+                            rownames = F,
+                            escape = FALSE,
+                            selection = 'none',
+                            options = list(
+                              lengthChange = F,
+                              pageLength = nrow(df),
+                              scrollX = T,
+                              scrollY = T,
+                              dom = 't')
+    ) %>%
+      DT::formatStyle( 0 , target= 'row',color = '#0A446B', fontSize ='13px', lineHeight='15px')
+
+
+    dtable
+  })
+
+
+  output$infoDics <- renderUI({
+    div(
+      dsmodules::downloadTableUI("dropdown_dic", dropdownLabel = "Descargar", formats = c("csv", "xlsx", "json"), display = "dropdown"),
+      DT::dataTableOutput("tableDic")
+    )
+  })
+
+
+  dic_down <- reactive({
+    dic_down <- NULL
+    if (!is.null(dic_to_labels())) {
+      dic_down <- dic_to_labels()
+    } else {
+      dic_down <- shape_fringe()$dic
+    }
+    dic_down
+  })
+
+  observe({
+    dsmodules::downloadTableServer("dropdown_dic", element = reactive(dic_down()), formats = c("csv", "xlsx", "json"))
+  })
 
 
 
