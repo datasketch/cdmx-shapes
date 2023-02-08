@@ -152,12 +152,23 @@ server <- function(input, output, session) {
     cdmx.shapes::fringe_data(shape_load()@data)
   })
 
+  var_num <- reactive({
+    req(info_url())
+    if (is.null(info_url()$resource_viz)) return()
+    var <- strsplit(info_url()$resource_viz, split = ",") |>
+      unlist()
+    var <- setdiff(var, c(NA, ""))
+    if (identical(var, character()) | identical(var, logical())) var <- NULL
+    var
+  })
 
   # variables numericas a graficar
   numeric_var <- reactive({
     req(shape_fringe())
     if (nrow(shape_fringe()$data) < 2) return()
     if (class(shape_load())[1] == "SpatialPointsDataFrame") return()
+    var_num <- var_num()
+    if (is.null(var_num)) {
     dic <- shape_fringe()$dic
     if (nrow(dic) == 0) return()
     dic$hdType[grepl("ano", dic$id)] <- "Yea"
@@ -167,7 +178,9 @@ server <- function(input, output, session) {
     dic <- dic |>
       dplyr::filter(hdType == "Num")
     if (nrow(dic) == 0) return()
-    dic$label
+    var_num <- dic$label
+    }
+    var_num
   })
 
 
