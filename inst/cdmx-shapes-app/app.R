@@ -97,7 +97,7 @@ server <- function(input, output, session) {
 
   info_url <- reactive({
     linkInfo <- url_par()$inputs$ckanConf
-    if (is.null(linkInfo)) linkInfo <-  "ce383321-92de-4a13-8234-7756b520ee4e"
+    if (is.null(linkInfo)) linkInfo <-  "ace56b90-85b6-47ed-a9d6-acf413f61dda"
     cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
   })
 
@@ -113,7 +113,7 @@ server <- function(input, output, session) {
     req(info_url())
     url_shape <- info_url()$url
     unlink("down_shapes/", recursive = TRUE)
-    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/ce383321-92de-4a13-8234-7756b520ee4e/download/ingreso_promedio_trimestral.zip"
+    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/ace56b90-85b6-47ed-a9d6-acf413f61dda/download/ingreso_promedio_trimestral.zip"
     unzip_shape(url = url_shape, export_dir = "down_shapes")
   })
 
@@ -128,6 +128,11 @@ server <- function(input, output, session) {
                  selected = shape_info()$shape_layer[1])
   })
 
+
+  dic_to_labels <- reactive({
+    req(dic_ckan())
+    dic_ckan()$dic
+  })
 
   # read shape --------------------------------------------------------------
 
@@ -159,6 +164,7 @@ server <- function(input, output, session) {
       unlist()
     var <- setdiff(var, c(NA, ""))
     if (identical(var, character()) | identical(var, logical())) var <- NULL
+
     var
   })
 
@@ -169,17 +175,25 @@ server <- function(input, output, session) {
     if (class(shape_load())[1] == "SpatialPointsDataFrame") return()
     var_num <- var_num()
     if (is.null(var_num)) {
-    dic <- shape_fringe()$dic
-    if (nrow(dic) == 0) return()
-    dic$hdType[grepl("ano", dic$id)] <- "Yea"
-    dic$hdType[grepl("id", dic$id)] <- "Uid"
-    dic$hdType[grepl("cve_ent|c_ingrtrim", dic$id)] <- "___"
+      dic <- shape_fringe()$dic
+      if (nrow(dic) == 0) return()
+      dic$hdType[grepl("ano", dic$id)] <- "Yea"
+      dic$hdType[grepl("id", dic$id)] <- "Uid"
+      dic$hdType[grepl("cve_ent|c_ingrtrim", dic$id)] <- "___"
 
-    dic <- dic |>
-      dplyr::filter(hdType == "Num")
-    if (nrow(dic) == 0) return()
-    var_num <- dic$label
+      dic <- dic |>
+        dplyr::filter(hdType == "Num")
+      if (nrow(dic) == 0) return()
+      var_num <- dic$label
     }
+
+    if (!is.null(dic_to_labels())) {
+      dic <- dic_to_labels()
+      dic <- dic |> dplyr::filter(Nombre %in% var_num)
+      var_num <- setNames(dic$Nombre, dic$Etiqueta)
+    }
+
+
     var_num
   })
 
@@ -232,7 +246,18 @@ server <- function(input, output, session) {
     if (is.null(label_id)) label_id <- input$label_id
     if (!is.null(label_id)) {
       label_id <- intersect(label_id, names(shape@data))
+
+
       if (!identical(label_id, character())) {
+        if (!is.null(dic_to_labels())) {
+          dic_labs <- dic_to_labels() |> dplyr::filter(Nombre %in% label_id)
+          if (nrow(dic_labs) > 0) {
+            label_id <- setNames(dic_labs$Nombre, dic_labs$Etiqueta)
+          }
+        } else {
+          label_id <- setNames(label_id, label_id)
+        }
+
         shape@data <- shape@data |>
           dplyr::mutate(labels = glue::glue(
             cdmx.shapes:::labels_map(nms = label_id)) %>%
@@ -244,6 +269,8 @@ server <- function(input, output, session) {
     }
     shape
   })
+
+
 
 
   output$fuente <- renderUI({
@@ -556,7 +583,7 @@ datos <- content$result$records
           #if (input$vizDownFormat == "1") ext <- ".jpg"
           if (input$vizDownFormat == "1") ext <- ".pdf"
           if (input$vizDownFormat == "2") ext <- ".html"
-          print("entroooooo")
+
           cdmx.shapes:::download_viz(params = params_markdown(),
                                      file = file,
                                      ext = ext,

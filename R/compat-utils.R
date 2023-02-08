@@ -45,9 +45,10 @@ read_ckan_dic <- function(url, idDic) {
 
 labels_map <- function (nms) {
   label_ftype <- nms
+  names_fype <- names(nms)
   tooltip <- paste0(
     purrr::map(seq_along(label_ftype), function(i) {
-      paste0(label_ftype[i], ": {", label_ftype[i], "}")
+      paste0(names(label_ftype[i]), ": {", label_ftype[i], "}")
     }) |> unlist(), collapse = "<br/>")
   tooltip
 }
