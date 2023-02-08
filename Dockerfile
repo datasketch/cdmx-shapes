@@ -61,6 +61,7 @@ RUN Rscript -e 'remotes::install_github("datasketch/parmesan@d361f2047a6bb366a0a
 RUN Rscript -e 'remotes::install_github("datasketch/dsmodules@5e9a9860ae27aad2cbecf3492be5eab1545e5ff5")'
 RUN Rscript -e 'remotes::install_version("markdown", upgrade="never", version = "1.2")'
 RUN Rscript -e 'remotes::install_github("rstudio/chromote@e1d2997932671642d12bef0b4c58611e322035c7")'
+ARG CKAN_URL
 RUN mkdir /build_zone
 ADD . /build_zone
 WORKDIR /build_zone

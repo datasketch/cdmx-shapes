@@ -97,7 +97,7 @@ server <- function(input, output, session) {
 
   info_url <- reactive({
     linkInfo <- url_par()$inputs$ckanConf
-    if (is.null(linkInfo)) linkInfo <-  "dee868ab-5679-455f-912c-cf6b94d694b0"
+    if (is.null(linkInfo)) linkInfo <-  "ce383321-92de-4a13-8234-7756b520ee4e"
     cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
   })
 
@@ -113,7 +113,7 @@ server <- function(input, output, session) {
     req(info_url())
     url_shape <- info_url()$url
     unlink("down_shapes/", recursive = TRUE)
-    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/dee868ab-5679-455f-912c-cf6b94d694b0/download/ingreso_promedio_trimestral.zip"
+    #url_shape <- "https://datos-prueba.cdmx.gob.mx/dataset/05d66891-33f9-405c-b6a3-f29aff791c1c/resource/ce383321-92de-4a13-8234-7756b520ee4e/download/ingreso_promedio_trimestral.zip"
     unzip_shape(url = url_shape, export_dir = "down_shapes")
   })
 
@@ -176,8 +176,20 @@ server <- function(input, output, session) {
     selectizeInput("numeric_id", "Variable numerica", numeric_var())
   })
 
+
+  var_to_label <- reactive({
+    req(info_url())
+    if (is.null(info_url()$resource_tooltip)) return()
+    var <- strsplit(info_url()$resource_tooltip, split = ",") |>
+      unlist()
+    var <- setdiff(var, c(NA, ""))
+    if (identical(var, character()) | identical(var, logical())) var <- NULL
+    var
+  })
+
   output$label_opts <- renderUI({
     req(shape_fringe())
+    if (!is.null(var_to_label())) return()
     dic <-  shape_fringe()$dic
     if (nrow(dic) == 0) return()
     checkboxGroupInput("label_id",
@@ -203,7 +215,8 @@ server <- function(input, output, session) {
   shape_to_plot <- reactive({
     req(shape_load())
     shape <- shape_load()
-    label_id <- input$label_id
+    label_id <- var_to_label()
+    if (is.null(label_id)) label_id <- input$label_id
     if (!is.null(label_id)) {
       label_id <- intersect(label_id, names(shape@data))
       if (!identical(label_id, character())) {
