@@ -23,9 +23,19 @@ read_ckan_dic <- function(url, idDic) {
   listDic <- listAll$resources
 
   listUrl <- listDic |> dplyr::select(name, format, url)
+  url_dic <- listUrl |> dplyr::filter(name == "Diccionario de datos")
+  dic <- NULL
+  if (nrow(url_dic) > 0) {
+    if (url_dic$format == "XLSX") {
+      dic <- rio::import(url_dic$url)
+    } else {
+      dic <- readr::read_csv(url_dic$url)
+    }
+  }
   listUrl$format <- gsub("\\.", "",tolower(listUrl$format))
 
   listDic <- list(
+    dic = dic,
     listCaptions = list(label = listAll$organization$title, id = listAll$organization$name),
     listLicense = list(id = listAll$license_id, title = listAll$license_title, url = listAll$license_url),
     listResources = listUrl
