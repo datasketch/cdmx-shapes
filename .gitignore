@@ -6,6 +6,10 @@
 .Rhistory
 .Rprofile
 inst/cdmx-shapes-app/rsconnect
-inst/cdmx-shapes-app/.Rbuidignore
+inst/cdmx-shapes-app/.Rbuildignore
 inst/cdmx-shapes-app/.DS_Store
 inst/cdmx-shapes-app/down_shapes
+inst/cdmx-shapes-app-highlight/rsconnect
+inst/cdmx-shapes-app-highlight/.Rbuildignore
+inst/cdmx-shapes-app-highlight/.DS_Store
+inst/cdmx-shapes-app-highlight/down_shapes
