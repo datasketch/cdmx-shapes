@@ -61,4 +61,4 @@ USER root
 EXPOSE 3838
 
 
-CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0'); cdmx.shapes::run_app('inst/cdmx-shapes-app/')"
+CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0'); cdmx.shapes::run_app()"
