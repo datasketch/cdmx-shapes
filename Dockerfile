@@ -6,7 +6,23 @@ RUN mkdir -p /usr/local/lib/R/etc/ /usr/lib/R/etc/ \
     && echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl', Ncpus = 4)" | tee /usr/local/lib/R/etc/Rprofile.site | tee /usr/lib/R/etc/Rprofile.site \
     && apt-get update \
     && apt-get install -y ca-certificates lsb-release wget
-RUN apt-get install -y \
+# Add the Apache Arrow repository
+RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+    && apt-get update \
+    && apt-get install -y ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+RUN wget https://downloads.vivaldi.com/stable/vivaldi-stable_5.5.2805.35-1_amd64.deb \
+    && apt-get update \
+    && apt-get install -y ./vivaldi-stable_5.5.2805.35-1_amd64.deb
+# Descarga de Apache Arrow y Vivaldi
+RUN wget https://downloads.vivaldi.com/stable/vivaldi-stable_5.5.2805.35-1_amd64.deb \
+    && wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+    && apt-get update \
+    && apt-get install -y ./vivaldi-stable_5.5.2805.35-1_amd64.deb ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+    && apt-get clean \
+    && rm vivaldi-stable_5.5.2805.35-1_amd64.deb apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+
+# Update after adding Apache Arrow repo and then install dependencies
+RUN apt-get update && apt-get install -y \
       gdal-bin \
       git-core \
       imagemagick \
@@ -32,15 +48,9 @@ RUN apt-get install -y \
       protobuf-compiler \
       libprotobuf-dev \
       libjq-dev \
-      libarrow-dev
-
-# Descarga de Apache Arrow y Vivaldi
-RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
-    && wget https://downloads.vivaldi.com/stable/vivaldi-stable_5.5.2805.35-1_amd64.deb \
-    && apt-get install -y ./vivaldi-stable_5.5.2805.35-1_amd64.deb ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
+      libarrow-dev \
     && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* \
-    && rm vivaldi-stable_5.5.2805.35-1_amd64.deb apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
+    && rm -rf /var/lib/apt/lists/*
 
 # Instalacion de paquetes de R
 RUN R -e 'install.packages(c("remotes", "rgdal", "sp", "stringi", "stringr", "shiny", "jsonlite", "purrr", "readr", "dplyr", "tidyr", "shinyjs", "leaflet", "config", "testthat", "spelling", "fs", "webshot2", "shinycustomloader", "shinybusy", "DT", "markdown"))' \
