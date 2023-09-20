@@ -73,13 +73,8 @@ RUN Rscript -e 'remotes::install_version("DT",upgrade="never", version = "0.23")
 RUN Rscript -e 'remotes::install_github("datasketch/shinypanels@e5ea3b4690bd009f3285a76fdb1eb7945c74d253")'
 RUN Rscript -e 'remotes::install_github("datasketch/shinyinvoer@dd8178db99cac78f0abbd236e83e07bf1f22ba18")'
 RUN Rscript -e 'remotes::install_github("datasketch/parmesan@d361f2047a6bb366a0adc271f0e264b62bd1e6e8")'
-RUN Rscript -e 'remotes::install_github("datasketch/geodata@b5b2b9f7f53af5c2457f5a3ad4adabe19c0a618c")'
-RUN Rscript -e 'remotes::install_github("rpruim/leaflethex@47e7328c0a19271e76f627f35b43fb1187e2dbef")'
 RUN Rscript -e 'remotes::install_github("datasketch/homodatum@6993e3f907579fc72cbbf605d1dd1184330f451b")'
-RUN Rscript -e 'remotes::install_github("datasketch/hgchmagic@87a138b59fbc52ec6cdc8970f4d6a17da39914f7")'
 RUN Rscript -e 'remotes::install_github("datasketch/dsmodules@5e9a9860ae27aad2cbecf3492be5eab1545e5ff5")'
-RUN Rscript -e 'remotes::install_github("datasketch/dsvizopts@4d3819ec343f80342308f5cc0974a86e1c515a61")'
-RUN Rscript -e 'remotes::install_github("datasketch/dsvizprep@73b3fba1fed6c8b84d07b15d82c2552aa93a6092")'
 RUN Rscript -e 'remotes::install_github("rstudio/chromote@e1d2997932671642d12bef0b4c58611e322035c7")'
 
 ARG CKAN_URL
