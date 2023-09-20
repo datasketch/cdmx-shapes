@@ -3,17 +3,12 @@ FROM --platform=linux/amd64 rocker/r-ver:4.2
 
 # Instalacion de dependencias
 RUN mkdir -p /usr/local/lib/R/etc/ /usr/lib/R/etc/ \
-    && echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl', Ncpus = 4)" | tee /usr/local/lib/R/etc/Rprofile.site | tee /usr/lib/R/etc/Rprofile.site \
+    && echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl', Ncpus = 4)" > /usr/local/lib/R/etc/Rprofile.site \
+    && cp /usr/local/lib/R/etc/Rprofile.site /usr/lib/R/etc/ \
     && apt-get update \
     && apt-get install -y ca-certificates lsb-release wget
-# Add the Apache Arrow repository
-RUN wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
-    && apt-get update \
-    && apt-get install -y ./apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb
-RUN wget https://downloads.vivaldi.com/stable/vivaldi-stable_5.5.2805.35-1_amd64.deb \
-    && apt-get update \
-    && apt-get install -y ./vivaldi-stable_5.5.2805.35-1_amd64.deb
-# Descarga de Apache Arrow y Vivaldi
+
+# Instalación de Vivaldi y Apache Arrow
 RUN wget https://downloads.vivaldi.com/stable/vivaldi-stable_5.5.2805.35-1_amd64.deb \
     && wget https://apache.jfrog.io/artifactory/arrow/$(lsb_release --id --short | tr 'A-Z' 'a-z')/apache-arrow-apt-source-latest-$(lsb_release --codename --short).deb \
     && apt-get update \
