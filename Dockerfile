@@ -76,6 +76,7 @@ RUN Rscript -e 'remotes::install_github("datasketch/parmesan@d361f2047a6bb366a0a
 RUN Rscript -e 'remotes::install_github("datasketch/homodatum@6993e3f907579fc72cbbf605d1dd1184330f451b")'
 RUN Rscript -e 'remotes::install_github("datasketch/dsmodules@5e9a9860ae27aad2cbecf3492be5eab1545e5ff5")'
 RUN Rscript -e 'remotes::install_github("rstudio/chromote@e1d2997932671642d12bef0b4c58611e322035c7")'
+RUN Rscript -e 'remotes::install_github("datasketch/cdmx-shapes")'
 
 ARG CKAN_URL
 RUN echo ckanUrl=${CKAN_URL} > .Renviron \
