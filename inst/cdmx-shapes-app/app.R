@@ -97,8 +97,9 @@ server <- function(input, output, session) {
   # read ckan info ----------------------------------------------------------
 
   info_url <- reactive({
+    print(url_info)
     linkInfo <- url_par()$inputs$ckanConf
-    if (is.null(linkInfo)) linkInfo <-  "eb20bbe2-cb43-4db2-8129-3feed446df68"#"611136b5-5891-4764-a4cd-c12a5109770f"#"ce383321-92de-4a13-8234-7756b520ee4e"
+    if (is.null(linkInfo)) linkInfo <-"0d0a2598-4f0e-4bcd-a667-85be655a93a6"#"6e541083-1399-4c14-a210-0493167c7b16"#"0d0a2598-4f0e-4bcd-a667-85be655a93a6"#"7c6ea52c-8395-4ec9-82a9-96099a6fe6bc"#"eb20bbe2-cb43-4db2-8129-3feed446df68"#"611136b5-5891-4764-a4cd-c12a5109770f"#"ce383321-92de-4a13-8234-7756b520ee4e"
     cdmx.shapes:::read_ckan_info(url = url_info, linkInfo = linkInfo)
   })
 
