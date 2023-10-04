@@ -81,4 +81,4 @@ RUN echo CHROMOTE_CHROME=/usr/bin/vivaldi >> .Renviron
 USER root
 EXPOSE 3838
 
-CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0'); cdmx.shapes::run_app()"
+CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0'); cdmx.shapes:::run_app_ciudadano()"
