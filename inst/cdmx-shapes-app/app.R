@@ -292,7 +292,8 @@ server <- function(input, output, session) {
 
   output$fuente <- renderUI({
     req(dic_ckan())
-    tags$a(href= paste0("https://datos.cdmx.gob.mx/organization/", dic_ckan()$listCaptions$id),
+    url <- gsub("/api/3/action/", "",url_info)
+    tags$a(href= paste0(url,"/organization/", dic_ckan()$listCaptions$id),
            paste0("Fuente: ", dic_ckan()$listCaptions$label), target="_blank")
   })
 
@@ -344,12 +345,13 @@ server <- function(input, output, session) {
   params_markdown <- reactive({
     req(map_down())
     req(info_url())
+    url <- gsub("/api/3/action/", "",url_info)
     list(viz = reactive(map_down()),
          title = gsub("\\*", "\\\\*",info_url()$name),
          subtitle = info_url()$resource_subtitle,
          fuentes =   paste0("<span style='font-weight:700;'>Fuente: </span>", dic_ckan()$listCaptions$label, "<br/>",
-                            tags$a(href= paste0("https://datos.cdmx.gob.mx/dataset/", info_url()$package_id, "/resource/", info_url()$id),
-                                   paste0("https://datos.cdmx.gob.mx/dataset/", info_url()$package_id), target="_blank"
+                            tags$a(href= paste0(url,"/dataset/", info_url()$package_id, "/resource/", info_url()$id),
+                                   paste0(url,"/dataset/", info_url()$package_id), target="_blank"
                             )
          )
     )
@@ -385,11 +387,11 @@ server <- function(input, output, session) {
           <table id='table-punto-api'>
           <tr>
           <th>Consulta</th>
-          <td><a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search</a></td>
+          <td><a id='link-modal' href='",url_info,"datastore_search' target='blank'>",url_info,"datastore_search</a></td>
           </tr>
           <tr>
           <th>Consulta (via SQL)</th>
-          <td><a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql</a></td>
+          <td><a id='link-modal' href='",url_info,"datastore_search_sql' target='blank'>",url_info, "datastore_search_sql</a></td>
           </tr>
           </table>
           </div>"
@@ -400,22 +402,22 @@ server <- function(input, output, session) {
             div(style='padding:10px 0px;margin-top: 20px;font-weight: 500;',
                 "Ejemplo de consulta (primeros cinco resultados)"),
             HTML(paste0(
-              "<a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
-              link_api,"&limit=5' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
+              "<a id='link-modal' href='",url_info,"datastore_search?resource_id=",
+              link_api,"&limit=5' target='blank'>",url_info,"datastore_search?resource_id=",
               link_api,"&limit=5</a>"
             )),
             div(style='padding:10px 0px;margin-top: 10px;font-weight: 500;',
                 "Ejemplo de consulta (resultados que contienen 'jones')"),
             HTML(paste0(
-              "<a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
-              link_api,"&q=jones' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search?resource_id=",
+              "<a id='link-modal' href='",url_info,"datastore_search?resource_id=",
+              link_api,"&q=jones' target='blank'>",url_info, "datastore_search?resource_id=",
               link_api,"&q=jones'</a>"
             )),
             div(style='padding:10px 0px;margin-top: 10px;font-weight: 500;',
                 "Consulta ejemplo (vía SQL)"),
             HTML(paste0(
-              "<a id='link-modal' href='https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql?sql=SELECT * from ",
-              link_api,"WHERE title LIKE 'jones'' target='blank'>https://datos.cdmx.gob.mx/api/3/action/datastore_search_sql?sql=SELECT * from ",
+              "<a id='link-modal' href='",url_info,"datastore_search_sql?sql=SELECT * from ",
+              link_api,"WHERE title LIKE 'jones'' target='blank'>",url_info,"datastore_search_sql?sql=SELECT * from ",
               link_api,"WHERE title LIKE 'jones'l</a>"
             ))
         ),
@@ -448,7 +450,7 @@ alert('Total results found: ' + data.result.total)
 <pre><code>
 import requests
 
-url = 'https://datos.cdmx.gob.mx/api/3/action/'
+url = '",url_info,"'
 
 params = {
     'resource_id': '", link_api,"',
@@ -469,7 +471,7 @@ library(httr)
 library(jsonlite)
 library(tidyverse)
 
-url <- "https://datos.cdmx.gob.mx/api/3/action/"
+url <- "',url_info,'"
 id <- "', link_api,'"
 
 consulta <- paste0(url, "datastore_search?", "resource_id=", id, "&limit=5", "&q=jones")
